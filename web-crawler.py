@@ -59,6 +59,15 @@ def add_to_index(index,keyword,url):
     else:
         url_list.append([x, [url]])
 		
+# Update the index to include
+# all of the word occurences found in the
+# page content by adding the url to the
+# word's associated url list.
+
+def add_page_to_index(index,url,content):
+    keyword_list = content.split()
+    for entry in keyword_list:
+        add_to_index(index, entry, url)
 		
 # Return a list
 # of the urls associated
