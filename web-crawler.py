@@ -60,3 +60,17 @@ def add_to_index(index,keyword,url):
         url_list = [keyword, []]
         url_list[1].append(url)
         index.append(url_list)
+		
+		
+# Return a list
+# of the urls associated
+# with the keyword. If the keyword
+# is not in the index, the procedure
+# should return an empty list.
+
+def lookup(index,keyword):
+    for entry in index:
+        if entry[0] == keyword:
+            return entry[1]
+            
+    return []
