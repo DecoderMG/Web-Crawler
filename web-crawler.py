@@ -55,11 +55,9 @@ def add_to_index(index,keyword,url):
     for x in index:
         if x[0] == keyword:
             x[1].append(url)
-            break
+            return
     else:
-        url_list = [keyword, []]
-        url_list[1].append(url)
-        index.append(url_list)
+        url_list.append([x, [url]])
 		
 		
 # Return a list
