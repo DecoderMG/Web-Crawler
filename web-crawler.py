@@ -34,14 +34,17 @@ def crawl_web(seed):
     tocrawl = [seed]
     crawled = []
 	index = {}
+	graph = {}
     while tocrawl:
         page = tocrawl.pop()
         if page not in crawled:
 			content = get_page(page)
 			add_page_to_index(index, page, content)
-            union(tocrawl, get_all_links(get_page(page)))
+			outlinks = get_all_links(content)
+			graph[page] = outlinks
+            union(tocrawl, outlinks))
             crawled.append(page)
-    return index
+    return index, graph
 	
 	
 # If the link exists in the index (dictionary) add to keyword
@@ -79,3 +82,30 @@ def lookup(index,keyword):
 		return index[keyword]
 	else:
 		return None
+		
+
+# D-rank system to ensure high value pages are returned first
+# This ranks pages based off number of quality links coming into the page.
+#
+def compute_ranks(graph):
+    
+	d = 0.8 # damping factor
+    numloops = 10
+    ranks = {}
+    npages = len(graph)
+	
+    for page in graph:
+        ranks[page] = 1.0 / npages
+    
+    for i in range(0, numloops):
+        newranks = {}
+        for page in graph:
+            newrank = (1 - d) / npages
+            
+            for link in graph:
+                if page in graph[link]:
+                    newrank = newrank + d * ranks[link]/(len(graph[link]))
+					
+            newranks[page] = newrank
+        ranks = newranks
+    return ranks
