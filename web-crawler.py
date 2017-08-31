@@ -33,7 +33,7 @@ def get_all_links(page):
 def crawl_web(seed):
     tocrawl = [seed]
     crawled = []
-	index = []
+	index = {}
     while tocrawl:
         page = tocrawl.pop()
         if page not in crawled:
@@ -44,23 +44,19 @@ def crawl_web(seed):
     return index
 	
 	
-# If the keyword is already
-# in the index, add the url
-# to the list of urls associated
-# with that keyword.
+# If the link exists in the index (dictionary) add to keyword
 
 # If the keyword is not in the index,
-# add an entry to the index: [keyword,[url]]
+# add an entry to the index
 
 index = []
 
 def add_to_index(index,keyword,url):
-    for x in index:
-        if x[0] == keyword:
-            x[1].append(url)
-            return
+    if keyword in index:
+		index[keyword].append(url)
     else:
-        url_list.append([x, [url]])
+        # not found, add new keyword to index (dictionary)
+		index[keyword] = [url]
 		
 # Update the index to include
 # all of the word occurences found in the
@@ -72,15 +68,14 @@ def add_page_to_index(index,url,content):
     for entry in keyword_list:
         add_to_index(index, entry, url)
 		
-# Return a list
+# Return a dictionary object for the link
 # of the urls associated
 # with the keyword. If the keyword
 # is not in the index, the procedure
-# should return an empty list.
+# should return None.
 
 def lookup(index,keyword):
-    for entry in index:
-        if entry[0] == keyword:
-            return entry[1]
-            
-    return []
+	if keyword in index:
+		return index[keyword]
+	else:
+		return None
