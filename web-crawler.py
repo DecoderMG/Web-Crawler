@@ -1,5 +1,11 @@
+from collections import deque
+
 index = {}
 
+# Gets page content from URL to parse through
+# Input: Url to a webpage (String)
+# Output: if page loads:    Decoded webpage HTML (String)
+#         else:             returns empty string (String)
 def get_page(url):
     try:
         import urllib.request
@@ -8,7 +14,10 @@ def get_page(url):
     except:
         return ""
 
-
+# Finds the next formatted link in current page
+# and returns that link
+# Inputs: Page
+# Output: Next Link (String), Ending position of link (int)
 def get_next_target(page):
     start_link = page.find('<a href=')
     if start_link == -1:
@@ -17,7 +26,6 @@ def get_next_target(page):
     end_quote = page.find('"', start_quote + 1)
     url = page[start_quote + 1:end_quote]
     return url, end_quote
-
 
 def union(p, q):
     for e in q:
@@ -38,19 +46,21 @@ def get_all_links(page):
 
 
 def crawl_web(seed):
-    tocrawl = [seed]
-    crawled = []
-    index = {}
+    # Want to use deque for performance. deque.popleft has a runtime of O(1)
+    # If we used .pop() from a list a shift is required thus runtime of O(n)
+    # With many removals between tocrawled and crawled deque is a must at scale
+    tocrawl = deque([seed])
+    crawled = deque()
     graph = {}
     while tocrawl:
-        page = tocrawl.pop()
+        page = tocrawl.popleft()
         if page not in crawled:
             content = get_page(page)
             add_page_to_index(index, page, content)
             outlinks = get_all_links(content)
             graph[page] = outlinks
             union(tocrawl, outlinks)
-            crawled.append(page)
+            crawled.append([page])
 
         print(tocrawl)
     return index, graph
@@ -124,3 +134,5 @@ def compute_ranks(graph):
             newranks[page] = newrank
         ranks = newranks
     return ranks
+
+crawl_web('https://dreams.build')
