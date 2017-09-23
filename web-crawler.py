@@ -1,6 +1,14 @@
 from collections import deque
+import urllib.request
+import urllib.parse
 
 index = {}
+current_page = ''
+base_urls = []
+
+# TODO: Make the crawler polite by adhearing to robot.txt and scanning sitemaps.
+# TODO: Finish page ranking algorithms
+# TODO: Add sanitization for links
 
 # Gets page content from URL to parse through
 # Input: Url to a webpage (String)
@@ -8,7 +16,6 @@ index = {}
 #         else:             returns empty string (String)
 def get_page(url):
     try:
-        import urllib.request
         with urllib.request.urlopen(url) as response:
             return response.read().decode('utf-8')
     except:
@@ -24,8 +31,16 @@ def get_next_target(page):
         return None, 0
     start_quote = page.find('"', start_link)
     end_quote = page.find('"', start_quote + 1)
-    url = page[start_quote + 1:end_quote]
+	url = page[start_quote + 1: end_quote]
+    #url = sanitize_url(page[start_quote + 1:end_quote])
     return url, end_quote
+
+
+#def sanitize_url(url):
+#   sanitized_link = url
+#    if '?' in url:
+#        sanitized_link = url.rsplit('?', 1)[0]
+#    return sanitized_link
 
 def union(p, q):
     for e in q:
@@ -61,7 +76,6 @@ def crawl_web(seed):
             graph[page] = outlinks
             union(tocrawl, outlinks)
             crawled.append([page])
-
         print(tocrawl)
     return index, graph
 
