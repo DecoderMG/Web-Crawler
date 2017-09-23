@@ -149,4 +149,4 @@ def compute_ranks(graph):
         ranks = newranks
     return ranks
 
-crawl_web('https://dreams.build')
+#crawl_web('https://dreams.build')
